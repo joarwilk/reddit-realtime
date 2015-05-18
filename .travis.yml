@@ -6,5 +6,5 @@ install:
 before_script:
   - npm install -g gulp
 script:
- - build
- - test
+ - gulp build
+ - gulp test
