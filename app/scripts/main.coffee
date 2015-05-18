@@ -1,2 +1,1 @@
-requirejs ["ranomizer"], (rand) ->
-  console.log rand
+console.log('')

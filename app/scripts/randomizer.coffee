@@ -1,4 +1,5 @@
-class Randomizer
+Randomizer =
+  spread: (a) ->
+    return a
 
-  constructor: ->
-    console.log 'tes'
+module.exports = Randomizer

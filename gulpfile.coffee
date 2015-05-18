@@ -13,6 +13,10 @@ plumber     = require('gulp-plumber');
 istanbul    = require('gulp-coffee-istanbul')
 mocha       = require('gulp-mocha');
 
+chalk = require('chalk')
+
+require("better-stack-traces").register()
+
 sources =
   styles: './app/**/*.styl'
   html: ['./app/*.html', './app/**/*.html', 'app/manifest.json']
@@ -26,8 +30,17 @@ destinations =
   html: 'dist/'
   js: 'dist/js'
 
-gulp.task 'test', ->
-  gulp.src(sources.scripts)
+watching = false;
+
+onError = (err) ->
+  console.log chalk.red.dim err.stack
+  if watching
+    this.emit('end')
+  else
+    process.exit(1)
+
+gulp.task 'test-with-coverage', ->
+  gulp.src(destinations.js + '/*.js')
   .pipe istanbul({includeUntested: true}) # Covering files
   .pipe istanbul.hookRequire()
   .on 'finish', ->
@@ -38,6 +51,13 @@ gulp.task 'test', ->
     }))
     .pipe(istanbul.writeReports())
 
+gulp.task 'test', ->
+  gulp.src('test/*.coffee', {read: false})
+  .pipe(mocha({
+    reporter: 'spec'
+    compilers: 'coffee:coffee-script'
+  }))
+  .on("error", onError)
 
 gulp.task 'style', ->
   gulp.src(sources.styles)
@@ -73,6 +93,8 @@ gulp.task 'images', ->
     .pipe(gulp.dest('dist/'))
 
 gulp.task 'watch', ->
+  watching = true
+
   gulp.watch sources.images, ['images']
   gulp.watch sources.styles, ['style']
   gulp.watch sources.scripts, ['lint', 'src']

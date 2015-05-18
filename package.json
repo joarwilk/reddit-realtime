@@ -1,7 +1,22 @@
 {
+  "name": "reddit-realtime",
+  "version": "0.0.1",
+  "description": "Turn reddit into a realtime flow of votes, comments and content",
+  "keywords": [
+    "reddit",
+    "realtime"
+  ],
+  "author": "Joar Wilk <joar.wilk@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/joarwilk/reddit-realtime"
+  },
   "devDependencies": {
+    "better-stack-traces": "^1.1.0",
     "browser-sync": "^1.6.3",
+    "browserify": "^10.2.0",
     "chai": "^2.3.0",
+    "chalk": "^1.0.0",
     "coffee-coverage": "^0.5.4",
     "coffee-script": "^1.8.0",
     "del": "^0.1.3",
@@ -23,5 +38,6 @@
     "mocha": "^2.2.1",
     "nib": "^1.0.4",
     "run-sequence": "^1.0.1"
-  }
+  },
+  "license": "MIT"
 }
