@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/joarwilk/reddit-realtime.svg?branch=angular)](https://travis-ci.org/joarwilk/reddit-realtime)
+
 # Reddit Realtime
 Updates reddit lists, posts and comments in realtime
 
