@@ -1,0 +1,5 @@
+# Reddit Realtime
+Updates reddit lists, posts and comments in realtime
+
+# How to use
+Either install from chrome store (link) or run `gulp build` and add the "dist" folder as an unpackaged extension in chrome://extensions
