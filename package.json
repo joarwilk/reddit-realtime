@@ -12,7 +12,7 @@
     "url": "git://github.com/joarwilk/reddit-realtime"
   },
   "dependencies": {
-    "browserify": "^10.2.0",
+    "browserify": "^10.2.0"
   },
   "devDependencies": {
     "better-stack-traces": "^1.1.0",
