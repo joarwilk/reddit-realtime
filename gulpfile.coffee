@@ -10,7 +10,7 @@ gulp        = require 'gulp'
 runSequence = require 'run-sequence'
 plumber     = require('gulp-plumber');
 shell =       require 'gulp-shell'
-
+util        = require 'util'
 istanbul    = require('gulp-coffee-istanbul')
 mocha       = require('gulp-mocha');
 
@@ -22,7 +22,7 @@ require("better-stack-traces").register({
 })
 
 sources =
-  styles: './src/**/*.styl'
+  styles: './src/**/*.css'
   html: ['./src/*.html', './src/**/*.html', 'src/manifest.json']
   scripts: ['./src/scripts/!(main)*.coffee', './src/**/main.coffee']
   vendor: './src/scripts/vendor/*.js'
@@ -57,7 +57,7 @@ gulp.task 'test-with-coverage', ->
     .pipe(istanbul.writeReports())
 
 gulp.task 'test', ->
-  shell 'clear'
+  util.print("\u001b[2J\u001b[0;0H")
 
   gulp.src('test/*.coffee', {read: false})
   .pipe(mocha({
@@ -68,7 +68,6 @@ gulp.task 'test', ->
 
 gulp.task 'style', ->
   gulp.src(sources.styles)
-  .pipe(stylus().on('error', gutil.log))
   .pipe(concat('main.css'))
   .pipe(gulp.dest(destinations.css))
 

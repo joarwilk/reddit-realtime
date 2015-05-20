@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.org/joarwilk/reddit-realtime.svg)](https://travis-ci.org/joarwilk/reddit-realtime)
 
+[![Dependencies](https://david-dm.org/joarwilk/reddit-realtime.svg)](https://david-dm.org/joarwilk/reddit-realtime)
+
 # Reddit Realtime
 Updates reddit lists, posts and comments in realtime
 
