@@ -3,7 +3,7 @@ chai = require('chai')
 should = chai.should
 chai.config.includeStack = true;
 
-Randomizer = require '../scripts/randomizer'
+Randomizer = require '../lib/randomizer'
 
 describe 'DataParser', ->
   describe 'parseMessages', ->

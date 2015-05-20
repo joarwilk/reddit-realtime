@@ -9,18 +9,22 @@ clean       = require 'gulp-clean'
 gulp        = require 'gulp'
 runSequence = require 'run-sequence'
 plumber     = require('gulp-plumber');
+shell =       require 'gulp-shell'
 
 istanbul    = require('gulp-coffee-istanbul')
 mocha       = require('gulp-mocha');
 
 chalk = require('chalk')
 
-require("better-stack-traces").register()
+require("better-stack-traces").register({
+  after: 3
+  collapseLibraries: /node_modules/
+})
 
 sources =
   styles: './src/**/*.styl'
   html: ['./src/*.html', './src/**/*.html', 'src/manifest.json']
-  scripts: ['./src/**/!(main)*.coffee', './src/**/main.coffee']
+  scripts: ['./src/scripts/!(main)*.coffee', './src/**/main.coffee']
   vendor: './src/scripts/vendor/*.js'
   js: './src/scripts/*.js'
   images: ['./src/**/*.jpg', './src/**/*.png']
@@ -28,7 +32,7 @@ sources =
 destinations =
   css: 'build/css'
   html: 'build/'
-  js: 'lib/js'
+  js: 'lib/'
 
 watching = false;
 
@@ -53,6 +57,8 @@ gulp.task 'test-with-coverage', ->
     .pipe(istanbul.writeReports())
 
 gulp.task 'test', ->
+  shell 'clear'
+
   gulp.src('test/*.coffee', {read: false})
   .pipe(mocha({
     reporter: 'spec'
@@ -102,6 +108,13 @@ gulp.task 'watch', ->
   gulp.watch sources.vendor, ['lint', 'src']
   gulp.watch sources.html, ['views']
   gulp.watch 'test/*.coffee', ['test']
+
+gulp.task 'watch-test', ->
+  gulp.watch sources.scripts, ['test']
+  gulp.watch sources.js,      ['test']
+  gulp.watch 'test/*.coffee', ['test']
+
+  runSequence 'test'
 
 gulp.task 'clean', ->
   gulp.src(['build/', 'lib/', 'dist/'], {read: false})
