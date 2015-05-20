@@ -6,10 +6,7 @@
 *.pid
 *.gz
 
-pids
-logs
-results
+build
 coverage
-dist
 
 node_modules

@@ -2,7 +2,8 @@ assert = require 'assert'
 chai = require('chai')
 should = chai.should
 chai.config.includeStack = true;
-Randomizer = require '../dist/js/app'
+
+Randomizer = require '../scripts/randomizer'
 
 describe 'DataParser', ->
   describe 'parseMessages', ->

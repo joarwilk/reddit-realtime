@@ -11,14 +11,16 @@
     "type": "git",
     "url": "git://github.com/joarwilk/reddit-realtime"
   },
+  "dependencies": {
+    "browserify": "^10.2.0",
+  },
   "devDependencies": {
     "better-stack-traces": "^1.1.0",
     "browser-sync": "^1.6.3",
-    "browserify": "^10.2.0",
     "chai": "^2.3.0",
     "chalk": "^1.0.0",
-    "coffee-coverage": "^0.5.4",
     "coffee-script": "^1.8.0",
+    "coffee-coverage": "^0.5.4",
     "del": "^0.1.3",
     "escape-string-regexp": "^1.0.2",
     "gulp": "^3.8.10",

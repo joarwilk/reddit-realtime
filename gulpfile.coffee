@@ -18,17 +18,17 @@ chalk = require('chalk')
 require("better-stack-traces").register()
 
 sources =
-  styles: './app/**/*.styl'
-  html: ['./app/*.html', './app/**/*.html', 'app/manifest.json']
-  scripts: ['./app/**/!(main)*.coffee', './app/**/main.coffee']
-  vendor: './app/scripts/vendor/*.js'
-  js: './app/scripts/*.js'
-  images: ['./app/**/*.jpg', './app/**/*.png']
+  styles: './src/**/*.styl'
+  html: ['./src/*.html', './src/**/*.html', 'src/manifest.json']
+  scripts: ['./src/**/!(main)*.coffee', './src/**/main.coffee']
+  vendor: './src/scripts/vendor/*.js'
+  js: './src/scripts/*.js'
+  images: ['./src/**/*.jpg', './src/**/*.png']
 
 destinations =
-  css: 'dist/css'
-  html: 'dist/'
-  js: 'dist/js'
+  css: 'build/css'
+  html: 'build/'
+  js: 'lib/js'
 
 watching = false;
 
@@ -47,6 +47,7 @@ gulp.task 'test-with-coverage', ->
     gulp.src('test/*.coffee', {read: false})
     .pipe(mocha({
       reporter: 'spec'
+      require: 'coffee-script/register'
       compilers: 'coffee:coffee-script'
     }))
     .pipe(istanbul.writeReports())
@@ -67,7 +68,7 @@ gulp.task 'style', ->
 
 gulp.task "views", ->
   gulp.src(sources.html)
-  .pipe(gulp.dest("dist/"))
+  .pipe(gulp.dest("build/"))
 
 gulp.task 'lint', ->
   gulp.src(sources.scripts)
@@ -78,19 +79,18 @@ gulp.task 'lint', ->
 
 gulp.task 'src', ->
   gulp.src(sources.vendor)
-  .pipe(gulp.dest('dist/js/vendor'))
+  .pipe(gulp.dest(destinations.js + '/vendor'))
   gulp.src(sources.js)
   .pipe(gulp.dest(destinations.js))
 
   gulp.src(sources.scripts)
   .pipe(plumber())
   .pipe(coffee({bare: true}).on('error', ( -> )))
-  .pipe(concat('app.js'))
   .pipe(gulp.dest(destinations.js))
 
 gulp.task 'images', ->
   gulp.src(sources.images)
-    .pipe(gulp.dest('dist/'))
+    .pipe(gulp.dest('build/'))
 
 gulp.task 'watch', ->
   watching = true
@@ -104,7 +104,8 @@ gulp.task 'watch', ->
   gulp.watch 'test/*.coffee', ['test']
 
 gulp.task 'clean', ->
-  gulp.src(['dist/'], {read: false}).pipe(clean())
+  gulp.src(['build/', 'lib/', 'dist/'], {read: false})
+  .pipe(clean())
 
 gulp.task 'build', ->
   runSequence 'clean', ['style', 'lint', 'src', 'views', 'images']
