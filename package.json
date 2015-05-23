@@ -1,6 +1,6 @@
 {
   "name": "reddit-realtime",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Turn reddit into a realtime flow of votes, comments and content",
   "keywords": [
     "reddit",
