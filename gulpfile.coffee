@@ -1,12 +1,10 @@
 gulp        = require 'gulp'
 gutil       = require 'gulp-util'
-stylus      = require 'gulp-stylus'
 coffeelint  = require 'gulp-coffeelint'
 coffee      = require 'gulp-coffee'
 concat      = require 'gulp-concat'
 uglify      = require 'gulp-uglify'
 clean       = require 'gulp-clean'
-gulp        = require 'gulp'
 runSequence = require 'run-sequence'
 plumber     = require('gulp-plumber');
 shell =       require 'gulp-shell'
@@ -106,9 +104,11 @@ gulp.task 'watch', ->
   gulp.watch sources.js, ['lint', 'src']
   gulp.watch sources.vendor, ['lint', 'src']
   gulp.watch sources.html, ['views']
-  gulp.watch 'test/*.coffee', ['test']
+  #gulp.watch 'test/*.coffee', ['test'] - Should this be included?
 
 gulp.task 'watch-test', ->
+  watching = true
+
   gulp.watch sources.scripts, ['test']
   gulp.watch sources.js,      ['test']
   gulp.watch 'test/*.coffee', ['test']
