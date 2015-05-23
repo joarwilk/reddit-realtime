@@ -6,11 +6,11 @@ concat      = require 'gulp-concat'
 uglify      = require 'gulp-uglify'
 clean       = require 'gulp-clean'
 runSequence = require 'run-sequence'
-plumber     = require('gulp-plumber');
-shell =       require 'gulp-shell'
+plumber     = require 'gulp-plumber'
+shell       = require 'gulp-shell'
 util        = require 'util'
-istanbul    = require('gulp-coffee-istanbul')
-mocha       = require('gulp-mocha');
+istanbul    = require 'gulp-coffee-istanbul'
+mocha       = require 'gulp-mocha'
 
 chalk = require('chalk')
 
@@ -22,7 +22,7 @@ require("better-stack-traces").register({
 sources =
   styles: './src/**/*.css'
   html: ['./src/*.html', './src/**/*.html', 'src/manifest.json']
-  scripts: ['./src/scripts/!(main)*.coffee', './src/**/main.coffee']
+  scripts: ['./src/scripts/**/!(main)*.coffee', './src/**/main.coffee']
   vendor: './src/scripts/vendor/*.js'
   js: './src/scripts/*.js'
   images: ['./src/**/*.jpg', './src/**/*.png']
