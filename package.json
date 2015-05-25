@@ -37,6 +37,7 @@
     "gulp-uglify": "^1.0.1",
     "gulp-util": "^3.0.1",
     "mocha": "^2.2.1",
+    "redcarb": "0.0.1",
     "run-sequence": "^1.0.1"
   },
   "license": "MIT"

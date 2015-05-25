@@ -77,7 +77,7 @@ gulp.task "views", ->
 gulp.task 'lint', ->
   gulp.src(sources.scripts)
   .pipe(coffeelint({
-    "max_line_length": 131
+    "max_line_length": 80
   }))
   .pipe(coffeelint.reporter())
 
