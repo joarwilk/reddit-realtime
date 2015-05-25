@@ -61,6 +61,7 @@ gulp.task 'test', ->
   .pipe(mocha({
     reporter: 'spec'
     compilers: 'coffee:coffee-script'
+    require: 'mocha-cleand'
   }))
   .on("error", onError)
 
