@@ -4,27 +4,24 @@ expect = require('chai').expect
 randomizer = require '../lib/randomizer'
 
 transitions = {
-  score: require '../lib/transitions/score'
-  post: require '../lib/transitions/post'
+  Score: require '../lib/transitions/score'
+  Post: require '../lib/transitions/post'
 }
 
 describe 'Transitions', ->
   describe 'score', ->
-    sampleObject = {}
 
-    beforeEach ->
-      sampleObject = {
-        start: 100
-        end: 100
-        duration: 10
-      }
+    it 'should throw if not called with all arguments', ->
+      expect(() ->
+        new transitions.Score()
+      ).to.throw
 
-    it 'should create a set of keyframes', ->
+    it.skip 'should create a set of keyframes', ->
       transition = new transitions.Score(sampleObject)
 
       expect(transition).to.have.property("keyframes").with.length.above(0)
 
-    it 'should create a specific number of keyframes if specified', ->
+    it.skip 'should create a specific number of keyframes if specified', ->
       sampleObject.keyframeCount = 4
 
       transition = new transitions.Score(sampleObject)
@@ -32,17 +29,46 @@ describe 'Transitions', ->
       expect(transition).to.have.property("keyframes").with.length 4
 
     it 'always returns the end value if start == end', ->
-      transition = new transitions.Score(sampleObject)
+      transition = new transitions.Score(100, 100, 10)
 
       for n in [0..10]
         score = transition.getAt(n)
-        expect(score).to.equal(10)
+        expect(score).to.equal(100)
 
-    it 'should be a linear progression between each keyframe', ->
-      transition = Object.create transitions.Score({
-        start: 100
-        end: 500
-        duration: 2000
-      })
+    describe 'getAt', ->
 
-      expect(undefined).to.not.exist
+      it 'returns the end value if param > duration', ->
+
+        transition = new transitions.Score(100, 500, 2000)
+
+        score = transition.getAt(3000)
+
+        expect(score).to.equal 500
+
+      it 'throws if param is < 0', ->
+        transition = new transitions.Score(0, 100, 100)
+
+        expect(() ->
+          transition.getAt(-1)
+        ).to.throw
+
+      describe 'when transitioning linearly', ->
+        duration = 2000
+        for i in [0..duration] by 200
+          progress = i/duration * 100
+
+          it 'returns ' + progress + ' at ' + progress + '%', ->
+
+            transition = new transitions.Score(0, 100, duration)
+
+            score = transition.getAt(i)
+
+            expect(score).to.equal progress
+
+        it 'accounts for the start value', ->
+          transition = new transitions.Score(50, 100, 1000)
+
+          expect(transition.getAt(500)).to.equal 75
+
+
+

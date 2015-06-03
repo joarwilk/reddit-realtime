@@ -10,7 +10,7 @@ hence the singleton.
 
 ###
 
-class Fetcher
+class Timer
 
   constructor: () ->
     @MIN_REQUEST_WAIT_TIME = 2500
@@ -32,8 +32,6 @@ class Fetcher
       callback: callback
     }
 
-    interval.id = setInterval(interval.callback, interval.pollingRate)
-
     @intervals.push(interval)
 
   clearAllIntervals: () =>
@@ -42,4 +40,14 @@ class Fetcher
 
     @intervals = []
 
-module.exports = new Fetcher()
+  start: () =>
+    for interval in @intervals
+      interval.id = setInterval(interval.callback, interval.pollingRate)
+
+  stop: () =>
+    for interval in @intervals
+      clearInterval(interval.id)
+      interval.id = 0
+
+
+module.exports = new Timer()

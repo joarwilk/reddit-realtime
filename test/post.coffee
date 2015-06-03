@@ -1,7 +1,7 @@
 assert = require 'assert'
 expect = require('chai').expect
 
-post = require '../lib/post'
+post = require '../lib/transitions/post'
 
 describe 'Post', ->
   describe 'from', ->

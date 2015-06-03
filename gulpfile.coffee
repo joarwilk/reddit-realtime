@@ -13,11 +13,11 @@ istanbul    = require 'gulp-coffee-istanbul'
 mocha       = require 'gulp-mocha'
 
 chalk = require('chalk')
-
+###
 require("better-stack-traces").register({
   after: 3
   collapseLibraries: /node_modules/
-})
+})###
 
 sources =
   styles: './src/**/*.css'
@@ -32,10 +32,10 @@ destinations =
   html: 'build/'
   js: 'lib/'
 
-watching = false;
+watching = false
 
 onError = (err) ->
-  console.log chalk.red.dim err.stack
+  console.error err.stack
   if watching
     this.emit('end')
   else
@@ -61,9 +61,8 @@ gulp.task 'test', ->
   .pipe(mocha({
     reporter: 'spec'
     compilers: 'coffee:coffee-script'
-    require: 'mocha-clean'
   }))
-  .on("error", onError)
+  .on('error', onError)
 
 gulp.task 'style', ->
   gulp.src(sources.styles)
