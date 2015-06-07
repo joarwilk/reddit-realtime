@@ -13,11 +13,11 @@ istanbul    = require 'gulp-coffee-istanbul'
 mocha       = require 'gulp-mocha'
 
 chalk = require('chalk')
-###
+
 require("better-stack-traces").register({
   after: 3
   collapseLibraries: /node_modules/
-})###
+})
 
 sources =
   styles: './src/**/*.css'
@@ -35,7 +35,7 @@ destinations =
 watching = false
 
 onError = (err) ->
-  console.error err.stack
+  console.error chalk.red err.stack?.substr(0, 550)
   if watching
     this.emit('end')
   else

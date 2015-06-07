@@ -13,12 +13,15 @@ hence the singleton.
 class Timer
 
   constructor: () ->
-    @MIN_REQUEST_WAIT_TIME = 2500
+    @MAX_REQUESTS_PER_MINUTE = 25
+    @MIN_REQUEST_WAIT_TIME = 60000 / @MAX_REQUESTS_PER_MINUTE
     @intervals = []
 
   addInterval: (url) =>
     # Extra arguments can be either pollrate and callback
     # or just callback
+    throw new Error() unless arguments[1]?
+
     if typeof arguments[1] is 'function'
       pollingRate = @MIN_REQUEST_WAIT_TIME
       callback: arguments[1]
@@ -28,11 +31,14 @@ class Timer
 
     interval = {
       url: url
-      pollingRate: Math.max(@MIN_REQUEST_WAIT_TIME, pollingRate)
+      desiredPollRate: pollingRate
+      pollingRate: 0
+      offset: 0
       callback: callback
     }
 
     @intervals.push(interval)
+    @adjustPollRates()
 
   clearAllIntervals: () =>
     @intervals.forEach (interval) ->
@@ -42,12 +48,25 @@ class Timer
 
   start: () =>
     for interval in @intervals
-      interval.id = setInterval(interval.callback, interval.pollingRate)
+      offsetCallback = () ->
+        interval.id = setInterval(interval.callback, interval.pollingRate)
+      setTimeout(offsetCallback, interval.offset)
 
   stop: () =>
     for interval in @intervals
       clearInterval(interval.id)
       interval.id = 0
 
+  adjustPollRates: () =>
+    # get total amount of timer calls per minute
+    total = @intervals.reduce (sum, interval) ->
+      # calulate how many times this interval runs per minute
+      sum + (60000 / interval.desiredPollRate)
+
+    # If we're doing too many requests, each interval's poll rate
+    # will be lower than the desired poll rate
+    ratio = Math.min(1, total / @MAX_REQUESTS_PER_MINUTE)
+    @intervals = @intervals.map (interval) ->
+      interval.pollingRate = interval.desiredPollRate * ratio
 
 module.exports = new Timer()

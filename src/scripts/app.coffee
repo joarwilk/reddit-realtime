@@ -16,17 +16,25 @@ class App
   init: () =>
     url = window.location.href
 
-    if url.indexOf('/comments/')
+    if url.indexOf('/comments/') != -1
       @pageType = 'post'
-    else if url.indexOf('/r/')
+    else if url.indexOf('/wiki/') != -1
+      @pageType = 'wiki'
+    else if url.indexOf('/r/') != -1
       @pageType = 'subreddit'
     else
       @pageType = 'frontpage'
 
-  start: () =>
-    timer.addInterval () ->
-      reddit.comments 'Javascript', '389wvc', (err, data, res) ->
-        console.error(err, data)
+    button = $('<button id="toggle-realtime">TOGGLE</button>')
+    button.click () =>
+      @start()
+    button.appendTo($('#header-bottom-right'))
 
+  start: () =>
+    switch @pageType
+      when 'frontpage'
+        timer.addInterval () ->
+          reddit.hot (err, data, res) ->
+            console.error(err, data)
 
 module.exports = App

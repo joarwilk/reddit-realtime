@@ -30,6 +30,11 @@ describe 'Timer', ->
 
       expect(timer.intervals[0].pollingRate).to.equal 5000
 
+    it 'requires at least two arguments', ->
+      expect(() ->
+        timer.addInterval '/.json'
+      ).to.throw
+
     it 'polls as fast as possible if time is omitted', ->
       timer.addInterval '/.json', () ->
 
@@ -38,6 +43,14 @@ describe 'Timer', ->
     it 'alternates requests if two intervals have equal poll rates', ->
       timer.addInterval '/.json', () ->
       timer.addInterval '/.html', () ->
+
+      expect(timer.intervals[1].offset).to.equal timer.MIN_REQUEST_WAIT_TIME
+
+      it 'halves the individual poll rate if two intervals are going as fast as possible', ->
+      timer.addInterval '/.json', () ->
+      timer.addInterval '/.html', () ->
+
+      expect(timer.intervals[1].pollRate).to.equal timer.MIN_REQUEST_WAIT_TIME * 2
 
   describe 'start', ->
     it 'gives each interval an id', ->
