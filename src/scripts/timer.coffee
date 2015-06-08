@@ -17,17 +17,17 @@ class Timer
     @MIN_REQUEST_WAIT_TIME = 60000 / @MAX_REQUESTS_PER_MINUTE
     @intervals = []
 
-  addInterval: (url) =>
+  addInterval: (url, args...) =>
     # Extra arguments can be either pollrate and callback
     # or just callback
-    throw new Error() unless arguments[1]?
+    throw new Error() unless args[0]?
 
-    if typeof arguments[1] is 'function'
+    if typeof args[0] is 'function'
       pollingRate = @MIN_REQUEST_WAIT_TIME
-      callback: arguments[1]
+      callback = args[0]
     else
-      pollingRate = arguments[1]
-      callback = arguments[2]
+      pollingRate = args[0]
+      callback = args[1]
 
     interval = {
       url: url
@@ -58,15 +58,19 @@ class Timer
       interval.id = 0
 
   adjustPollRates: () =>
-    # get total amount of timer calls per minute
-    total = @intervals.reduce (sum, interval) ->
-      # calulate how many times this interval runs per minute
-      sum + (60000 / interval.desiredPollRate)
+    # get total amount of desired api calls per minute
+    total = @intervals
+      .map (interval) ->
+        return (60000 / interval.desiredPollRate)
+      .reduce (sum, rate) ->
+        return sum + rate
 
-    # If we're doing too many requests, each interval's poll rate
-    # will be lower than the desired poll rate
-    ratio = Math.min(1, total / @MAX_REQUESTS_PER_MINUTE)
+    # If we're doing too many requests, adjust the timing
+    # intervals so we're within limit
+    ratio = Math.min(1, @MAX_REQUESTS_PER_MINUTE / total)
     @intervals = @intervals.map (interval) ->
       interval.pollingRate = interval.desiredPollRate * ratio
+      return interval
+    #console.log total
 
 module.exports = new Timer()
