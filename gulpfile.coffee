@@ -5,12 +5,18 @@ coffee      = require 'gulp-coffee'
 concat      = require 'gulp-concat'
 uglify      = require 'gulp-uglify'
 clean       = require 'gulp-clean'
+glob        = require 'glob'
 runSequence = require 'run-sequence'
 plumber     = require 'gulp-plumber'
 shell       = require 'gulp-shell'
 util        = require 'util'
 istanbul    = require 'gulp-coffee-istanbul'
 mocha       = require 'gulp-mocha'
+reactify    = require 'reactify'
+source      = require 'vinyl-source-stream'
+buffer      = require 'vinyl-buffer'
+browserify  = require 'browserify'
+sourcemaps = require('gulp-sourcemaps');
 
 chalk = require('chalk')
 
@@ -114,6 +120,23 @@ gulp.task 'watch-test', ->
   gulp.watch 'test/*.coffee', ['test']
 
   runSequence 'test'
+
+gulp.task 'chrome', ->
+  b = browserify({
+    entries: glob.sync('./lib/**/*.js'),
+    debug: true,
+    transform: [reactify]
+  });
+
+  return b.bundle()
+    .pipe(source('app.js'))
+    .pipe(buffer())
+    .pipe(sourcemaps.init({loadMaps: true}))
+        .pipe(uglify())
+        .on('error', gutil.log)
+    .pipe(sourcemaps.write('./'))
+    .pipe(gulp.dest('./build/'));
+
 
 gulp.task 'clean', ->
   gulp.src(['build/', 'lib/', 'dist/'], {read: false})

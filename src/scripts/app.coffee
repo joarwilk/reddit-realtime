@@ -1,5 +1,5 @@
 timer = require '../lib/timer'
-reddit = require 'redcarb'
+#reddit = require 'redcarb'
 
 ### **************
 
