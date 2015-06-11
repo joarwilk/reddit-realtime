@@ -106,8 +106,8 @@ gulp.task 'watch', ->
 
   gulp.watch sources.images, ['images']
   gulp.watch sources.styles, ['style']
-  gulp.watch sources.scripts, ['lint', 'src']
-  gulp.watch sources.js, ['lint', 'src']
+  gulp.watch sources.scripts, ['lint', 'src', 'chrome']
+  gulp.watch sources.js, ['lint', 'src', 'chrome']
   gulp.watch sources.vendor, ['lint', 'src']
   gulp.watch sources.html, ['views']
   #gulp.watch 'test/*.coffee', ['test'] - Should this be included?
@@ -127,6 +127,9 @@ gulp.task 'chrome', ->
     debug: true,
     transform: [reactify]
   });
+
+  gulp.src('./src/chrome/**/*.*')
+    .pipe(gulp.dest('build/'))
 
   return b.bundle()
     .pipe(source('app.js'))

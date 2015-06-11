@@ -40,9 +40,12 @@
     "gulp-task-listing": "^0.3.0",
     "gulp-uglify": "^1.0.1",
     "gulp-util": "^3.0.1",
+    "jsdom": "^5.4.3",
     "mocha": "^2.2.1",
+    "mocha-jsdom": "^0.4.0",
     "redcarb": "0.0.1",
-    "run-sequence": "^1.0.1"
+    "run-sequence": "^1.0.1",
+    "sinon": "^1.14.1"
   },
   "license": "MIT"
 }

@@ -1,4 +1,5 @@
 timer = require '../lib/timer'
+renderer = require '../lib/renderer'
 #reddit = require 'redcarb'
 
 ### **************
@@ -25,16 +26,27 @@ class App
     else
       @pageType = 'frontpage'
 
-    button = $('<button id="toggle-realtime">TOGGLE</button>')
-    button.click () =>
-      @start()
-    button.appendTo($('#header-bottom-right'))
+    console.log @pageType
 
-  start: () =>
-    switch @pageType
-      when 'frontpage'
-        timer.addInterval () ->
-          reddit.hot (err, data, res) ->
-            console.error(err, data)
+    button = document.createElement('button')
+    button.id = 'toggle-realtime'
+    button.innerHTML = 'TOGGLE'
+    button.onclick = () ->
+      timer.start()
+
+    timer.addInterval '/.json', 5000, () ->
+      console.log 'getting'
+      xhr = new XMLHttpRequest()
+      xhr.open 'GET', '//rl.reddit.com/r/all.json', true
+      xhr.setRequestHeader 'Content-Type', 'application/json'
+
+      xhr.onload = ->
+        if xhr.status == 200
+          root = JSON.parse(xhr.responseText)
+          renderer.listing(root.data.children.map (node) -> node.data)
+        return
+      xhr.send()
+
+    document.querySelector('#header-bottom-right').appendChild(button)
 
 module.exports = App

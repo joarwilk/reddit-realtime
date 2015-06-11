@@ -1,5 +1,6 @@
 assert = require 'assert'
 expect = require('chai').expect
+sinon  = require 'sinon'
 
 timer = require '../lib/timer'
 
@@ -54,11 +55,27 @@ describe 'Timer', ->
       expect(timer.intervals[1].pollRate).to.equal timer.MIN_REQUEST_WAIT_TIME * 2
 
   describe 'start', ->
-    it 'gives each interval an id', ->
+    before => @clock = sinon.useFakeTimers()
+    after => @clock.restore()
+
+    it 'gives each interval an id', =>
+      timer.addInterval '/.json', () ->
       timer.start()
 
+      @clock.tick(1)
+
       for interval in timer.intervals
-        expect(interval.id).to.be.above 0
+        expect(interval.id).not.be.null
+
+    it 'calls the interval callback after 2500ms', =>
+      spy = sinon.spy()
+
+      timer.addInterval '/.json', 2500, spy
+
+      @clock.tick(2500)
+
+      expect(spy).to.be.calledOnce
+
 
   describe 'stop', ->
     it 'clears all interval ids', ->

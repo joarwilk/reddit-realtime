@@ -7,7 +7,7 @@
   "version_name": "first-round alpha",
 
   "permissions": [
-    "*://*.reddit.com/*"
+    "*://*.reddit.com/*", "webRequest", "webRequestBlocking"
   ],
   "content_scripts": [
     {
@@ -19,6 +19,7 @@
     "128": "images/icon.png"
   },
   "background": {
-    "page": "background.html"
+    "scripts": ["background.js"],
+    "persistent": true
   }
 }

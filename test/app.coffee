@@ -1,14 +1,10 @@
 expect = require('chai').expect
+sinon = require 'sinon'
+jsdom = require 'jsdom'
 
 App = require '../lib/app'
 
 describe 'app', ->
-  before ->
-    window = {
-      location: {
-        href: ''
-      }
-    }
 
   it 'should run without errors', ->
     expect(() ->

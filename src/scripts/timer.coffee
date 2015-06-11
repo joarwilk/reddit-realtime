@@ -30,6 +30,7 @@ class Timer
       callback = args[1]
 
     interval = {
+      id: null
       url: url
       desiredPollRate: pollingRate
       pollingRate: 0
@@ -49,8 +50,11 @@ class Timer
   start: () =>
     for interval in @intervals
       offsetCallback = () ->
+        console.log 'setting callback'
+        console.info interval
         interval.id = setInterval(interval.callback, interval.pollingRate)
       setTimeout(offsetCallback, interval.offset)
+      interval.callback()
 
   stop: () =>
     for interval in @intervals
@@ -71,6 +75,5 @@ class Timer
     @intervals = @intervals.map (interval) ->
       interval.pollingRate = interval.desiredPollRate * ratio
       return interval
-    #console.log total
 
 module.exports = new Timer()
