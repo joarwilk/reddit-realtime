@@ -11,7 +11,7 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
         headers.forEach(function(header, i) {
             console.info(header.name)
             if (header.name == 'User-Agent') {
-                header.value = 'Realtime Reddit by /u/Glorious-G';
+                header.value = 'Realtime Reddit v0.1 by /u/Glorious-G';
             }
         });
         return {
