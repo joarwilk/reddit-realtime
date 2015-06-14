@@ -4,9 +4,9 @@ API Requester
 
 ###
 module.exports =
-  request: (url, callback) ->
+  request: (path, callback) ->
     xhr = new XMLHttpRequest()
-    xhr.open 'GET', "//rl.reddit.com#{url}", true
+    xhr.open 'GET', "//rl.reddit.com#{path}", true
     xhr.setRequestHeader 'Content-Type', 'application/json'
 
     xhr.onload = ->
