@@ -97,6 +97,8 @@ gulp.task 'src', ->
   .pipe(coffee({bare: true}).on('error', ( -> )))
   .pipe(gulp.dest(destinations.js))
 
+  runSequence 'chrome'
+
 gulp.task 'images', ->
   gulp.src(sources.images)
     .pipe(gulp.dest('build/'))
@@ -106,8 +108,8 @@ gulp.task 'watch', ->
 
   gulp.watch sources.images, ['images']
   gulp.watch sources.styles, ['style']
-  gulp.watch sources.scripts, ['lint', 'src', 'chrome']
-  gulp.watch sources.js, ['lint', 'src', 'chrome']
+  gulp.watch sources.scripts, ['lint', 'src']
+  gulp.watch sources.js, ['lint', 'src']
   gulp.watch sources.vendor, ['lint', 'src']
   gulp.watch sources.html, ['views']
   #gulp.watch 'test/*.coffee', ['test'] - Should this be included?

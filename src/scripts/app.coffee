@@ -26,26 +26,15 @@ class App
     else
       @pageType = 'frontpage'
 
-    console.log @pageType
+    timer.addInterval 5000, () ->
+      reddit.frontpage (list) ->
+        renderer.listing(list)
 
     button = document.createElement('button')
     button.id = 'toggle-realtime'
     button.innerHTML = 'TOGGLE'
     button.onclick = () ->
       timer.start()
-
-    timer.addInterval '/.json', 5000, () ->
-      console.log 'getting'
-      xhr = new XMLHttpRequest()
-      xhr.open 'GET', '//rl.reddit.com/r/all.json', true
-      xhr.setRequestHeader 'Content-Type', 'application/json'
-
-      xhr.onload = ->
-        if xhr.status == 200
-          root = JSON.parse(xhr.responseText)
-          renderer.listing(root.data.children.map (node) -> node.data)
-        return
-      xhr.send()
 
     document.querySelector('#header-bottom-right').appendChild(button)
 

@@ -17,8 +17,8 @@ class Timer
     @MIN_REQUEST_WAIT_TIME = 60000 / @MAX_REQUESTS_PER_MINUTE
     @intervals = []
 
-  addInterval: (url, args...) =>
-    # Extra arguments can be either pollrate and callback
+  addInterval: (args...) =>
+    # Arguments can be either pollrate and callback
     # or just callback
     throw new Error() unless args[0]?
 
@@ -31,7 +31,6 @@ class Timer
 
     interval = {
       id: null
-      url: url
       desiredPollRate: pollingRate
       pollingRate: 0
       offset: 0

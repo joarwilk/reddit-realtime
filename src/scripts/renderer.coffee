@@ -19,6 +19,8 @@ module.exports = {
       e.innerHTML = '123'
       elem.appendChild(e)
 
+    return elem
+
   swapListElements: (first, second) ->
     first.classList.add('swapping')
     post.insertBefore(first, second)
@@ -36,20 +38,27 @@ module.exports = {
     postListItem.elements.unvoted.classList.add('flash-upvote')
     setTimeout () ->
       postListItem.elements.unvoted.classList.remove('flash-upvote')
-    , 0
+    , 6000
 
   highlightDownvote: (postListItem) ->
     # Make the score text blue and then instantly fade it back to normal
     postListItem.elements.unvoted.classList.add('flash-downvote')
     setTimeout () ->
       postListItem.elements.unvoted.classList.remove('flash-downvote')
+    , 6000
+
+  highlightCommentCountChange: (postListItem) ->
+    postListItem.elements.comments.classList.add('flash-countchange')
+    setTimeout () ->
+      postListItem.elements.comments.classList.remove('flash-countchange')
     , 0
 
 
   listing: (posts) ->
+    # Convert nodelist to array
     listing = Array::slice.call(document.querySelectorAll('.thing.link'))
 
-    posts = posts.map (post, i) ->
+    posts = posts.map (post, i) =>
       elem = document.querySelector('[data-fullname="' + post.name + '"]')
       if elem
         elements = {
@@ -85,39 +94,37 @@ module.exports = {
       }
 
     start = null
-    render = (timestamp) ->
+    render = (timestamp) =>
       start = timestamp unless start
       time = timestamp - start
 
       if time > 5000
         return
 
-      posts.forEach (post) ->
-        if (Math.random() > 0.1)
-          score = Math.floor(post.scoreTransition.getAt(time))
-          commentCount = Math.floor(post.commentCountTransition.getAt(time))
-          post.elements.dislikes.innerHTML = score - 1
-          post.elements.unvoted.innerHTML = score
-          post.elements.likes.innerHTML = score + 1
+      posts.forEach (post) =>
+        if (Math.random() < 0.1)
+          return
 
-          post.elements.comments.innerHTML = "#{commentCount} comments"
+        score = Math.floor(post.scoreTransition.getAt(time))
+        commentCount = Math.floor(post.commentCountTransition.getAt(time))
+        post.elements.dislikes.innerHTML = score - 1
+        post.elements.unvoted.innerHTML = score
+        post.elements.likes.innerHTML = score + 1
 
-          if post.prevScore < score
-            @highlightUpvote(post)
-          else if post.prevScore > score
-            @highlightDownvote(post)
+        post.elements.comments.innerHTML = "#{commentCount} comments"
 
-          if post.prevCommentCount < commentCount
-            @highlightCommentCountChange(post)
+        if post.prevScore < score
+          @highlightUpvote(post)
+        else if post.prevScore > score
+          @highlightDownvote(post)
 
-          post.prevScore = score
-          post.prevCommentCount = commentCount
+        if post.prevCommentCount < commentCount
+          @highlightCommentCountChange(post)
+
+        post.prevScore = score
+        post.prevCommentCount = commentCount
 
       window.requestAnimationFrame(render)
     window.requestAnimationFrame(render)
-
-
-        #if document.querySelector('#siteTable').indexOf(elem) > i
-          #do
 
 }
