@@ -3,7 +3,7 @@
 API Requester
 
 ###
-class Reddit
+module.exports =
   request: (url, callback) ->
     xhr = new XMLHttpRequest()
     xhr.open 'GET', "//rl.reddit.com#{url}", true
@@ -24,5 +24,3 @@ class Reddit
 
   messages: (callback) ->
     @requestApi('/user/messages', callback)
-
-module.exports = reddit

@@ -1,0 +1,22 @@
+.unvoted, a.comments {
+  transition: color 0.2s;
+}
+
+.flash {
+  transition: none;
+}
+
+.midcol .score.flash-downvote {
+  transition: none;
+  color: #9494FF;
+}
+
+.midcol .score.flash-upvote {
+  transition: none;
+  color: #FF8B60;
+}
+
+.flash-countchange {
+  transition: none;
+  color: #FF8B60;
+}

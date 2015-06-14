@@ -1,5 +1,7 @@
 timer = require '../lib/timer'
 renderer = require '../lib/renderer'
+reddit = require '../lib/reddit'
+
 #reddit = require 'redcarb'
 
 ### **************
@@ -28,7 +30,7 @@ class App
 
     timer.addInterval 5000, () ->
       reddit.frontpage (list) ->
-        renderer.listing(list)
+        renderer.listing(list.children.map (node) -> node.data)
 
     button = document.createElement('button')
     button.id = 'toggle-realtime'

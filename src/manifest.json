@@ -12,7 +12,8 @@
   "content_scripts": [
     {
       "matches": ["*://*.reddit.com/*"],
-      "js": ["app.js"]
+      "js": ["app.js"],
+      "css": ["css/main.css"]
     }
   ],
   "icons": {

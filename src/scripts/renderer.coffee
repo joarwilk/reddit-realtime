@@ -8,6 +8,9 @@ module.exports = {
     #for comment in comments
       # do nothing
 
+  getListing: () ->
+    return Array::slice.call(document.querySelectorAll('.thing.link'))
+
   createListElementFromPost: (post) ->
     elem = document.createElement('div')
     elem.innerHTML = post.score
@@ -18,16 +21,17 @@ module.exports = {
       e.setAttribute('class', classname)
       e.innerHTML = '123'
       elem.appendChild(e)
-
+    console.info elem
     return elem
 
   swapListElements: (first, second) ->
     first.classList.add('swapping')
-    post.insertBefore(first, second)
+    second.parentNode.insertBefore(first, second.nextSibling)
 
   insertListElement: (post, index) ->
     post.classList.add('inserting')
-    post.insertBefore(@getListing()[index], post)
+    ref = @getListing()[index]
+    ref.parentNode.insertBefore(post, ref.nextSibling)
 
   removeListElement: (post) ->
     post.classList.add('removing')
@@ -38,14 +42,14 @@ module.exports = {
     postListItem.elements.unvoted.classList.add('flash-upvote')
     setTimeout () ->
       postListItem.elements.unvoted.classList.remove('flash-upvote')
-    , 6000
+    , 0
 
   highlightDownvote: (postListItem) ->
     # Make the score text blue and then instantly fade it back to normal
     postListItem.elements.unvoted.classList.add('flash-downvote')
     setTimeout () ->
       postListItem.elements.unvoted.classList.remove('flash-downvote')
-    , 6000
+    , 0
 
   highlightCommentCountChange: (postListItem) ->
     postListItem.elements.comments.classList.add('flash-countchange')
@@ -56,10 +60,11 @@ module.exports = {
 
   listing: (posts) ->
     # Convert nodelist to array
-    listing = Array::slice.call(document.querySelectorAll('.thing.link'))
+    listing = @getListing()
 
     posts = posts.map (post, i) =>
       elem = document.querySelector('[data-fullname="' + post.name + '"]')
+
       if elem
         elements = {
           dislikes: elem.querySelector('.score.dislikes')
@@ -67,10 +72,16 @@ module.exports = {
           likes: elem.querySelector('.score.likes')
           comments: elem.querySelector('.comments')
         }
+
+        if listing.indexOf(elem) - 10 != i
+          console.info 'swapping', i
+          @swapListElements(listing[i + 10], elem)
+          listing = @getListing()
       else
         console.info 'new thing - ', post.title
 
-        @insertListElement(@createListElementFromPost(post), i)
+        elem = @createListElementFromPost(post)
+        @insertListElement(elem, i)
 
         elements = {
           dislikes: elem.children[0]
@@ -79,12 +90,18 @@ module.exports = {
           comments: elem.children[3]
         }
 
+        listing = @getListing()
+
       startScore = parseInt(elements.unvoted.innerHTML)
       startScore = post.score if isNaN startScore
       scoreTransition = new ScoreTransition(startScore, post.score, 5000)
 
       # Remove " comments" from string
-      startCommentCount = elements.comments.innerHTML.match(/\d/g).join('')
+      if elements.comments.classList.contains('emtpty')
+        startCommentCount = 0
+      else
+        startCommentCount = elements.comments.innerHTML.match(/\d/g).join('')
+
       commentCountTransition = new ScoreTransition(parseInt(startCommentCount), post.num_comments, 5000)
 
       return {
