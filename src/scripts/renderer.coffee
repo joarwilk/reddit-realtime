@@ -9,7 +9,7 @@ module.exports = {
       # do nothing
 
   getListing: () ->
-    return Array::slice.call(document.querySelectorAll('.thing.link'))
+    return Array::slice.call(document.querySelectorAll('#siteTable > .thing.link'))
 
   createListElementFromPost: (post) ->
     elem = document.createElement('div')
@@ -29,9 +29,9 @@ module.exports = {
     second.parentNode.insertBefore(first, second.nextSibling)
 
   insertListElement: (post, index) ->
-    post.classList.add('inserting')
+    post.elements.root.classList.add('inserting')
     ref = @getListing()[index]
-    ref.parentNode.insertBefore(post, ref.nextSibling)
+    ref.parentNode.insertBefore(post.elements.root, ref.nextSibling)
 
   removeListElement: (post) ->
     post.classList.add('removing')
