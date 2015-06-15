@@ -1,6 +1,8 @@
+manager = require '../lib/listManager'
 timer = require '../lib/timer'
 renderer = require '../lib/renderer'
 reddit = require '../lib/reddit'
+settings = require '../lib/settings'
 
 #reddit = require 'redcarb'
 
@@ -28,16 +30,16 @@ class App
     else
       @pageType = 'frontpage'
 
-    timer.addInterval 5000, () ->
-      reddit.frontpage (list) ->
-        renderer.listing(list.children.map (node) -> node.data)
+    if @pageType is not 'post'
+      manager = new ListManager(settings.LIST_UPDATE_INTERVAL)
+      manager.parseExisting()
 
-    button = document.createElement('button')
-    button.id = 'toggle-realtime'
-    button.innerHTML = 'TOGGLE'
-    button.onclick = () ->
-      timer.start()
+      timer.addInterval settings.LIST_UPDATE_INTERVAL, () ->
+        reddit.frontpage (list) ->
+          manager.update(list.children.map (node) -> node.data)
 
-    document.querySelector('#header-bottom-right').appendChild(button)
+    renderer.insertRealtimeToggleButton().onclick = () ->
+      timer.running ? timer.stop() : timer.start()
+
 
 module.exports = App

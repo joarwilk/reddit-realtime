@@ -47,6 +47,8 @@ class Timer
     @intervals = []
 
   start: () =>
+    @running = true
+
     for interval in @intervals
       offsetCallback = () ->
         console.log 'setting callback'
@@ -56,6 +58,8 @@ class Timer
       interval.callback()
 
   stop: () =>
+    @running = false
+
     for interval in @intervals
       clearInterval(interval.id)
       interval.id = 0

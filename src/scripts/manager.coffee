@@ -1,14 +1,50 @@
 renderer = require '../lib/renderer'
+
 class ListManager
   constructor: (updateInterval) ->
+    @updateInterval = updateInterval
+
+  update: (rawPosts) =>
+    # If the seen flag is not set to true, remove post after update
+    @posts.forEach (post) -> post.seen = false
+
+    rawPosts.forEach (rawPost, i) =>
+      if @posts[rawPost.id] is undefined
+        @addFromJSON(rawPost)
+        @setIndex(@posts[rawPost.id], i)
+
+      post = @posts[rawPost.id]
+      post.seen = true
+
+      scoreTransition = new ScoreTransition(post.score, rawPost.score, @updateInterval)
+      commentCountTransition = new ScoreTransition(parseInt(startCommentCount), post.num_comments, @updateInterval)
+
+    @posts.forEach (post) => @deletePost(post) unless post.seen
+
+  deletePost: (post) ->
+    renderer.removeListElement(post.elements.root)
+    @posts[post.id] = undefined
+
+  setIndex: (post, index) ->
+    @posts = @posts.map (post) ->
+      if post.index >= index
+        post.index--
+      return post
+    post.index = index
+    renderer.insertListElement(post, index)
 
   parseExisting: () ->
     elements = document.querySelectorAll('#siteTable > .thing.link')
     for element in elements
       @addFromElement(element)
 
+  addFromJSON: (postJSON) ->
+    elem = renderer.createListElementFromPost(postJSON)
+    @addFromElement(elem)
+
   addFromElement: (postElement) ->
     elements = {
+      root: postElement
       dislikes: postElement.querySelector('.score.dislikes')
       unvoted: postElement.querySelector('.score.unvoted')
       likes: postElement.querySelector('.score.likes')
@@ -26,16 +62,14 @@ class ListManager
     else
       commentCount = elements.comments.innerHTML.match(/\d/g).join('')
 
-    @posts.push({
+    id = postElement.getAttribute('data-fullname')
+
+    @posts[id] = {
       elements: elements
       score: score
       commentCount: commentCount
       index: index
-    })
-
-  addFromJSON: (postJSON) ->
-    elem = renderer.createListElementFromPost(postJSON)
-    @addFromElement(elem)
+    }
 
   ###
   For use in window.requestAnimationFrame
