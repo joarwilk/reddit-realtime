@@ -1,4 +1,4 @@
-manager = require '../lib/listManager'
+ListManager = require '../lib/listManager'
 timer = require '../lib/timer'
 renderer = require '../lib/renderer'
 reddit = require '../lib/reddit'
@@ -30,16 +30,16 @@ class App
     else
       @pageType = 'frontpage'
 
-    if @pageType is not 'post'
+    if @pageType is 'frontpage'
       manager = new ListManager(settings.LIST_UPDATE_INTERVAL)
       manager.parseExisting()
 
-      timer.addInterval settings.LIST_UPDATE_INTERVAL, () ->
+      id = timer.addInterval settings.LIST_UPDATE_INTERVAL, () ->
         reddit.frontpage (list) ->
           manager.update(list.children.map (node) -> node.data)
 
-    renderer.insertRealtimeToggleButton().onclick = () ->
-      timer.running ? timer.stop() : timer.start()
+      renderer.insertRealtimeToggleButton().onclick = () ->
+        if timer.running then timer.stop(id) else timer.start(id)
 
 
 module.exports = App

@@ -11,18 +11,14 @@ module.exports = {
   getListing: () ->
     return Array::slice.call(document.querySelectorAll('#siteTable > .thing.link'))
 
-  createListElementFromPost: (post) ->
-    elem = document.createElement('div')
-    elem.innerHTML = post.score
-    elem.setAttribute('data-fullname', post.name)
+  insertRealtimeToggleButton: () ->
+    button = document.createElement('button')
+    button.id = 'toggle-realtime'
+    button.innerHTML = 'TOGGLE'
 
-    for classname in [' score dislikes', ' score unvoted', ' score likes', ' comments']
-      e = document.createElement('div')
-      e.setAttribute('class', classname)
-      e.innerHTML = '123'
-      elem.appendChild(e)
-    console.info elem
-    return elem
+    document.querySelector('#header-bottom-right').appendChild(button)
+
+    return button
 
   swapListElements: (first, second) ->
     first.classList.add('swapping')
@@ -57,91 +53,115 @@ module.exports = {
       postListItem.elements.comments.classList.remove('flash-countchange')
     , 0
 
+  createListElementFromPost: (post) ->
+    elem = document.createElement('div')
+    elem.innerHTML =
+      """
+      <div class="thing inserted id-#{post.id} odd link" data-fullname="post.id" onclick= "click_thing(this)">
+        <p class="parent">
+        </p>
+        <span class="rank">0</span>
 
-  listing: (posts) ->
-    # Convert nodelist to array
-    listing = @getListing()
+        <div class="midcol unvoted">
+          <div class="arrow up login-required" onclick=
+          "$(this).vote(r.config.vote_hash, null, event)" tabindex="0">
+          </div>
 
-    posts = posts.map (post, i) =>
-      elem = document.querySelector('[data-fullname="' + post.name + '"]')
 
-      if elem
-        elements = {
-          dislikes: elem.querySelector('.score.dislikes')
-          unvoted: elem.querySelector('.score.unvoted')
-          likes: elem.querySelector('.score.likes')
-          comments: elem.querySelector('.comments')
-        }
+          <div class="score dislikes">
+            #{post.score - 1}
+          </div>
 
-        if listing.indexOf(elem) - 10 != i
-          console.info 'swapping', i
-          @swapListElements(listing[i + 10], elem)
-          listing = @getListing()
-      else
-        console.info 'new thing - ', post.title
 
-        elem = @createListElementFromPost(post)
-        @insertListElement(elem, i)
+          <div class="score unvoted">
+            #{post.score}
+          </div>
 
-        elements = {
-          dislikes: elem.children[0]
-          unvoted: elem.children[1]
-          likes: elem.children[2]
-          comments: elem.children[3]
-        }
 
-        listing = @getListing()
+          <div class="score likes">
+            #{post.score + 1}
+          </div>
 
-      startScore = parseInt(elements.unvoted.innerHTML)
-      startScore = post.score if isNaN startScore
-      scoreTransition = new ScoreTransition(startScore, post.score, 5000)
 
-      # Remove " comments" from string
-      if elements.comments.classList.contains('emtpty')
-        startCommentCount = 0
-      else
-        startCommentCount = elements.comments.innerHTML.match(/\d/g).join('')
+          <div class="arrow down login-required" onclick=
+          "$(this).vote(r.config.vote_hash, null, event)" tabindex="0">
+          </div>
+        </div>
+        <a class="thumbnail may-blank loggedin" href=
+        "#{post.url}"><img alt="" height="70" src=
+        "#{post.thumbnail}"
+        width="70"></a>
 
-      commentCountTransition = new ScoreTransition(parseInt(startCommentCount), post.num_comments, 5000)
+        <div class="entry unvoted lcTagged">
+          <p class="title"><a class="title may-blank loggedin srTagged imgScanned"
+          href="#{post.url}" id="img3" name="img3" tabindex="1"
+          type="IMAGE">#{post.title}</a> <span class="domain">(<a href=
+          "/domain/#{post.domain}">#{post.domain}</a>)</span></p>
+          <a class=
+          "toggleImage expando-button collapsed collapsedExpando image linkImg">&nbsp;</a>
 
-      return {
-        elements: elements
-        scoreTransition: scoreTransition
-        commentCountTransition: commentCountTransition
-      }
+          <p class="tagline">submitted <time class="live-timestamp" datetime=
+          "2015-06-11T11:09:17+00:00" title="Thu Jun 11 11:09:17 2015 UTC">2 hours
+          ago</time> by <a class="author may-blank id-t2_o1att userTagged" href=
+          "http://www.reddit.com/user/ChairwomanPaoZeDong">ChairwomanPaoZeDong</a><span class="RESUserTag"><a class="userTagLink RESUserTagImage"
+          href="javascript:void(0)" title="set a tag"></a></span> <a class=
+          "voteWeight" href="javascript:void(0)" style=
+          "display: none;">[vw]</a><span class="userattrs"></span> to <a class=
+          "subreddit hover may-blank" href=
+          "http://www.reddit.com/r/Stuff/">/r/Stuff</a></p>
 
-    start = null
-    render = (timestamp) =>
-      start = timestamp unless start
-      time = timestamp - start
 
-      if time > 5000
-        return
+          <ul class="flat-list buttons">
+            <li class="first">
+              <a class="comments may-blank" href=
+              "http://www.reddit.com/r/Stuff/comments/39fhvl/bad_luck_ellen/">#{post.num_comments}
+              comments</a>
+            </li>
 
-      posts.forEach (post) =>
-        if (Math.random() < 0.1)
-          return
 
-        score = Math.floor(post.scoreTransition.getAt(time))
-        commentCount = Math.floor(post.commentCountTransition.getAt(time))
-        post.elements.dislikes.innerHTML = score - 1
-        post.elements.unvoted.innerHTML = score
-        post.elements.likes.innerHTML = score + 1
+            <li class="share">
+              <a class="post-sharing-button" href="javascript:%20void%200;">share</a>
+            </li>
 
-        post.elements.comments.innerHTML = "#{commentCount} comments"
 
-        if post.prevScore < score
-          @highlightUpvote(post)
-        else if post.prevScore > score
-          @highlightDownvote(post)
+            <li class="link-save-button save-button">
+              <a href="#">save</a>
+            </li>
 
-        if post.prevCommentCount < commentCount
-          @highlightCommentCountChange(post)
 
-        post.prevScore = score
-        post.prevCommentCount = commentCount
+            <li>
+              <form action="/post/hide" class="state-button hide-button" method=
+              "post">
+                <input name="executed" type="hidden" value="hidden"><span><a href=
+                "javascript:void(0);">hide</a></span>
+              </form>
+            </li>
 
-      window.requestAnimationFrame(render)
-    window.requestAnimationFrame(render)
 
+            <li class="report-button">
+              <a class="action-thing" data-action-form="#report-action-form" href=
+              "javascript:void(0)">report</a>
+            </li>
+
+
+            <li><span class="redditSingleClick">[l+c]</span>
+            </li>
+          </ul>
+
+
+          <div class="expando" style="display: none">
+            <span class="error">loading...</span>
+          </div>
+        </div>
+
+
+        <div class="child">
+        </div>
+
+
+        <div class="clearleft">
+        </div>
+      </div>"""
+
+    return elem
 }

@@ -40,27 +40,31 @@ class Timer
     @intervals.push(interval)
     @adjustPollRates()
 
+    return @intervals.length - 1
+
   clearAllIntervals: () =>
     @intervals.forEach (interval) ->
       clearInterval(interval.id)
 
     @intervals = []
 
-  start: () =>
+  start: (id) =>
     @running = true
 
-    for interval in @intervals
+    affected = if id then [@intervals[id]] else @intervals
+
+    for interval in affected
       offsetCallback = () ->
-        console.log 'setting callback'
-        console.info interval
         interval.id = setInterval(interval.callback, interval.pollingRate)
       setTimeout(offsetCallback, interval.offset)
       interval.callback()
 
-  stop: () =>
+  stop: (id) =>
     @running = false
 
-    for interval in @intervals
+    affected = if id then [@intervals[id]] else @intervals
+
+    for interval in affected
       clearInterval(interval.id)
       interval.id = 0
 
