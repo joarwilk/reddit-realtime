@@ -10,21 +10,32 @@ class ListManager
     window.requestAnimationFrame(@tick)
 
   update: (rawPosts) =>
-    # If the seen flag is not set to true, remove post after update
     @posts.forEach (post) -> post.seen = false
 
     rawPosts.forEach (rawPost, i) =>
+      # If this list item is new, insert it
       if @posts[rawPost.name] is undefined
         @addFromJSON(rawPost)
         @setIndex(@posts[rawPost.name], i)
-
+      # Flag this post to have been seen so we dont delete it
       post = @posts[rawPost.name]
       post.seen = true
 
-      scoreTransition = new ScoreTransition(post.score, rawPost.score, @updateInterval)
-      commentCountTransition = new ScoreTransition(post.commentCount, post.num_comments, @updateInterval)
+      # Shift the score to the newer value
+      post.prevScore = post.score
+      post.score = rawPost.score
 
-    @posts.forEach (post) => @deletePost(post) unless post.seen
+      # Shift the comment count to the newer value
+      post.prevCommentCount = post.commentCount
+      post.commentCount = rawPost.num_comments
+
+    @posts.forEach (post) =>
+      unless post.seen
+        @deletePost(post)
+        return
+      post.scoreTransition = new ScoreTransition(post.prevScore, post.score, @updateInterval)
+      post.commentCountTransition = new ScoreTransition(post.prevCommentCount, post.commentCount, @updateInterval)
+
 
   deletePost: (post) ->
     renderer.removeListElement(post.elements.root)
@@ -43,9 +54,11 @@ class ListManager
     for element in elements
       @addFromElement(element)
 
+
   addFromJSON: (postJSON) ->
     elem = renderer.createListElementFromPost(postJSON)
     @addFromElement(elem)
+    return elem
 
   addFromElement: (postElement) ->
     elements = {
@@ -89,11 +102,12 @@ class ListManager
     time = timestamp - @startTime
 
     for own id, post of @posts
-      console.info post
+      continue unless post.scoreTransition
       score = Math.floor(post.scoreTransition.getAt(time))
       commentCount = Math.floor(post.commentCountTransition.getAt(time))
 
       if post.score != score or post.prevCommentCount != commentCount
+        console.info post.score
         if post.score < score
           renderer.highlightUpvote(post)
         else if post.score > score

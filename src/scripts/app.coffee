@@ -2,6 +2,7 @@ ListManager = require '../lib/listManager'
 timer = require '../lib/timer'
 renderer = require '../lib/renderer'
 reddit = require '../lib/reddit'
+RedditUser = require '../lib/redditUser'
 settings = require '../lib/settings'
 
 #reddit = require 'redcarb'
@@ -14,13 +15,8 @@ button DOM object.
 
 ###
 class App
-
-  # Check which type of page we're on and prepare
-  # everything accordingly
-  # Can be frontpage, subreddit or post
-  init: () =>
-    url = window.location.href
-
+  constructor: (url) =>
+    # Find which page we're on
     if url.indexOf('/comments/') != -1
       @pageType = 'post'
     else if url.indexOf('/wiki/') != -1
@@ -30,6 +26,7 @@ class App
     else
       @pageType = 'frontpage'
 
+  init: () =>
     if @pageType is 'frontpage'
       manager = new ListManager(settings.LIST_UPDATE_INTERVAL)
       manager.parseExisting()
@@ -38,8 +35,23 @@ class App
         reddit.frontpage (list) ->
           manager.update(list.children.map (node) -> node.data)
 
-      renderer.insertRealtimeToggleButton().onclick = () ->
+      button = renderer.insertRealtimeToggleButton()
+      button.onclick = () ->
         if timer.running then timer.stop(id) else timer.start(id)
+
+    if settings.REALTIME_USER_DATA_ENABLED
+      user = null
+
+      # Create user data interval
+      id = timer.addInterval 10000, () ->
+        reddit.user (userdata) ->
+          user.update(userdata, 10000)
+
+      # Fetch initial user info
+      reddit.user (data) ->
+        user = new RedditUser(data.messages, data.score, data.comment_score)
+        timer.start(id)
+
 
 
 module.exports = App

@@ -5,6 +5,9 @@ API Requester
 ###
 module.exports =
   request: (path, callback) ->
+    if path[0] != '/'
+      throw new TypeError
+
     xhr = new XMLHttpRequest()
     xhr.open 'GET', "//rl.reddit.com#{path}", true
     xhr.setRequestHeader 'Content-Type', 'application/json'
@@ -16,11 +19,11 @@ module.exports =
       return
     xhr.send()
 
-  frontpage: (callback) ->
-    @request('/.json', callback)
+  frontpage: (type, callback) ->
+    @request("/#{type}.json", callback)
 
-  subreddit: (subname, callback) ->
-    @request("/r/#{subname}/.json", callback)
+  subreddit: (type, subname, callback) ->
+    @request("/r/#{subname}/#{type}.json", callback)
 
   messages: (callback) ->
     @requestApi('/user/messages', callback)

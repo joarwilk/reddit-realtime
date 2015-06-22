@@ -1,9 +1,16 @@
 reddit = require '../lib/reddit'
 sinon = require 'sinon'
+expect = require('chai').expect
 
 describe 'Reddit', ->
+  before 'setup fake xmlhttprequests', ->
+    sinon.useFakeXMLHttpRequest()
+
   describe 'request', ->
     it 'does an xhr request for the specified path', ->
+      request('/new.json', () ->)
+
+      expect(xhr).to.equal null
 
     it 'calls the callback on success', ->
       spy = sinon.spy()
@@ -20,6 +27,6 @@ describe 'Reddit', ->
     it 'calls request with /.json as path', ->
       request = sinon.spy(reddit.request)
 
-      reddit.frontpage(() ->)
+      reddit.frontpage('hot', () ->)
       expect(request).to.have.been.calledOnce
 

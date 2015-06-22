@@ -1,8 +1,6 @@
 assert = require 'assert'
 expect = require('chai').expect
 
-randomizer = require '../lib/randomizer'
-
 transitions = {
   Score: require '../lib/transitions/score'
   Post: require '../lib/transitions/post'

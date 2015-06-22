@@ -25,9 +25,11 @@ module.exports = {
     second.parentNode.insertBefore(first, second.nextSibling)
 
   insertListElement: (post, index) ->
-    post.elements.root.classList.add('inserting')
+    root = post.elements.root
+    root.classList.add('inserting')
+
     ref = @getListing()[index]
-    ref.parentNode.insertBefore(post.elements.root, ref.nextSibling)
+    ref.parentNode.insertBefore(root, ref.nextSibling)
 
   removeListElement: (post) ->
     post.classList.add('removing')
@@ -53,18 +55,29 @@ module.exports = {
       postListItem.elements.comments.classList.remove('flash-countchange')
     , 0
 
+  highlightKarmaCountChange: (score, isCommentScore) ->
+
+
+
+  updateListItem: (postListItem) ->
+    postListItem.elements.unvoted.innerHTML =  postListItem.score
+
   createListElementFromPost: (post) ->
+    # Function moved to reduce the char count of some lines
+    clickFunc = '$(this).vote(r.config.vote_hash, null, event)'
+
     elem = document.createElement('div')
     elem.innerHTML =
       """
-      <div class="thing inserted id-#{post.id} odd link" data-fullname="post.id" onclick= "click_thing(this)">
+      <div class="thing inserted id-#{post.id} odd link"
+        data-fullname="#{post.id}" onclick= "click_thing(this)">
         <p class="parent">
         </p>
         <span class="rank">0</span>
 
         <div class="midcol unvoted">
-          <div class="arrow up login-required" onclick=
-          "$(this).vote(r.config.vote_hash, null, event)" tabindex="0">
+          <div class="arrow up login-required"
+            onclick="#{clickFunc}" tabindex="0">
           </div>
 
 
@@ -84,7 +97,7 @@ module.exports = {
 
 
           <div class="arrow down login-required" onclick=
-          "$(this).vote(r.config.vote_hash, null, event)" tabindex="0">
+          "#{clickFunc}" tabindex="0">
           </div>
         </div>
         <a class="thumbnail may-blank loggedin" href=
@@ -102,8 +115,9 @@ module.exports = {
 
           <p class="tagline">submitted <time class="live-timestamp" datetime=
           "2015-06-11T11:09:17+00:00" title="Thu Jun 11 11:09:17 2015 UTC">2 hours
-          ago</time> by <a class="author may-blank id-t2_o1att userTagged" href=
-          "http://www.reddit.com/user/ChairwomanPaoZeDong">ChairwomanPaoZeDong</a><span class="RESUserTag"><a class="userTagLink RESUserTagImage"
+          ago</time> by
+          <a class="author may-blank id-t2_o1att userTagged"
+            href="http://www.reddit.com/user/#{post.user}">#{post.user}</a><span class="RESUserTag"><a class="userTagLink RESUserTagImage"
           href="javascript:void(0)" title="set a tag"></a></span> <a class=
           "voteWeight" href="javascript:void(0)" style=
           "display: none;">[vw]</a><span class="userattrs"></span> to <a class=
