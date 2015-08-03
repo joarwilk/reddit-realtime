@@ -94,7 +94,7 @@ gulp.task 'src', ->
 
   gulp.src(sources.scripts)
   .pipe(plumber())
-  .pipe(coffee({bare: true}).on('error', ( -> )))
+  .pipe(coffee({bare: true}).on('error', onError))
   .pipe(gulp.dest(destinations.js))
 
 gulp.task 'images', ->

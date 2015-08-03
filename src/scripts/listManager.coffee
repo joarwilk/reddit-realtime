@@ -6,10 +6,13 @@ class ListManager
   constructor: (updateInterval) ->
     @posts = []
     @updateInterval = updateInterval
+    @timestampDirty = true
 
     window.requestAnimationFrame(@tick)
 
   update: (rawPosts) =>
+    @timestampDirty = true
+
     @posts.forEach (post) -> post.seen = false
 
     rawPosts.forEach (rawPost, i) =>
@@ -29,7 +32,7 @@ class ListManager
       post.prevCommentCount = post.commentCount
       post.commentCount = rawPost.num_comments
 
-    @posts.forEach (post) =>
+    for own id, post of @posts
       unless post.seen
         @deletePost(post)
         return
@@ -42,10 +45,12 @@ class ListManager
     @posts[post.id] = undefined
 
   setIndex: (post, index) ->
-    @posts = @posts.map (post) ->
-      if post.index >= index
-        post.index--
-      return post
+    # Shift every post at the specified index
+    # down a notch, and insert the post
+    # at that index
+    for own id, p of @posts
+      if p.index >= index
+        p.index--
     post.index = index
     renderer.insertListElement(post, index)
 
@@ -62,13 +67,13 @@ class ListManager
 
   addFromElement: (postElement) ->
     elements = {
-      id: postElement.getAttribute('data-fullname')
-      root: postElement
+      root:     postElement
+      id:       postElement.getAttribute('data-fullname')
       dislikes: postElement.querySelector('.score.dislikes')
-      unvoted: postElement.querySelector('.score.unvoted')
-      likes: postElement.querySelector('.score.likes')
+      unvoted:  postElement.querySelector('.score.unvoted')
+      likes:    postElement.querySelector('.score.likes')
       comments: postElement.querySelector('.comments')
-      index: postElement.querySelector('.rank')
+      index:    postElement.querySelector('.rank')
     }
 
     index = parseInt(elements.index.innerHTML)
@@ -98,16 +103,19 @@ class ListManager
      # window.requestAnimationFrame(@tick)
       #return
 
-    @startTime = timestamp unless @startTime
+    @startTime = timestamp if @timestampDirty
     time = timestamp - @startTime
+
+    @timestampDirty = false
 
     for own id, post of @posts
       continue unless post.scoreTransition
+
       score = Math.floor(post.scoreTransition.getAt(time))
       commentCount = Math.floor(post.commentCountTransition.getAt(time))
 
       if post.score != score or post.prevCommentCount != commentCount
-        console.info post.score
+
         if post.score < score
           renderer.highlightUpvote(post)
         else if post.score > score

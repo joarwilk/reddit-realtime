@@ -5,8 +5,8 @@ module.exports = {
 
     # Don't accept duplicate sounds
     sound = @sounds.filter (sound) -> sound.name == soundName
-    if sound
-      throw new ArgumentError("Sound #{soundName} already exists")
+    if sound.length
+      throw new Error("Sound #{soundName} already exists")
 
     # Create the audio element responsible for
     # playing this sound
@@ -33,9 +33,8 @@ module.exports = {
 
 
   playSound: (soundName) =>
+    # Grab the sound from our sound set
     sound = @sounds.filter (sound) -> sound.name == soundName
 
-    url =
-
-    @source.setAttribute('href', url)
+    sound[0].elements.audio.play()
 }

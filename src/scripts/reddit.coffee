@@ -15,7 +15,16 @@ module.exports =
     xhr.onload = ->
       if xhr.status == 200
         response = JSON.parse(xhr.responseText)
-        callback(response.data)
+        data = response.data
+
+        # Format the data slightly so the recievers
+        # dont have to do it themselves
+        if data.children
+          data.children = data.children.map (node) -> node.data
+
+          callback(data)
+        else
+          callback(response)
       return
     xhr.send()
 
@@ -25,5 +34,5 @@ module.exports =
   subreddit: (type, subname, callback) ->
     @request("/r/#{subname}/#{type}.json", callback)
 
-  messages: (callback) ->
-    @requestApi('/user/messages', callback)
+  user: (callback) ->
+    @request('/user.json', callback)

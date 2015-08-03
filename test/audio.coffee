@@ -1,9 +1,15 @@
 expect = require('chai').expect
+jsdom = require('jsdom')
 
 audio = require '../lib/audio'
 
 describe 'Audio', ->
   describe 'registerSound', ->
+    before ->
+      jsdom.env(
+        '<div></div>', [], (err, window) ->
+      )
+
     it 'adds another element to the collection', ->
       audio.registerSound('test')
 

@@ -1,3 +1,3 @@
 App = require '../lib/app'
 
-(new App(window.location.href)).init()
+(new App(window.location.pathname)).init()

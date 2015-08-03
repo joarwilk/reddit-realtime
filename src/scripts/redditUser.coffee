@@ -1,4 +1,4 @@
-audio = require 'audio'
+audio = require '../lib/audio'
 
 ###
 

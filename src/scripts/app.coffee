@@ -15,7 +15,7 @@ button DOM object.
 
 ###
 class App
-  constructor: (url) =>
+  constructor: (url) ->
     # Find which page we're on
     if url.indexOf('/comments/') != -1
       @pageType = 'post'
@@ -23,21 +23,38 @@ class App
       @pageType = 'wiki'
     else if url.indexOf('/r/') != -1
       @pageType = 'subreddit'
+      @subreddit = url.split('/')[2]
+      console.info 'settings', url, @subreddit
     else
       @pageType = 'frontpage'
 
+    console.info url
+
   init: () =>
-    if @pageType is 'frontpage'
+    if @pageType is 'post'
+      #
+    else
       manager = new ListManager(settings.LIST_UPDATE_INTERVAL)
       manager.parseExisting()
 
-      id = timer.addInterval settings.LIST_UPDATE_INTERVAL, () ->
-        reddit.frontpage (list) ->
-          manager.update(list.children.map (node) -> node.data)
+      if @pageType is 'frontpage'
+        refresh = () ->
+          reddit.frontpage 'hot', (list) ->
+            console.info 'list', list
+            manager.update(list.children)
+      else
+        refresh = () =>
+          reddit.subreddit 'hot', @subreddit, (list) ->
+            manager.update(list.children)
 
-      button = renderer.insertRealtimeToggleButton()
-      button.onclick = () ->
-        if timer.running then timer.stop(id) else timer.start(id)
+      id = timer.addInterval settings.LIST_UPDATE_INTERVAL, refresh
+
+      timer.start(id)
+
+    console.info id, 'ID'
+    button = renderer.insertRealtimeToggleButton()
+    button.onclick = () ->
+      if timer.running then timer.stop(id) else timer.start(id)
 
     if settings.REALTIME_USER_DATA_ENABLED
       user = null
